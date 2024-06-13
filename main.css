@@ -1,0 +1,74 @@
+/* main.css */
+body {
+    background-color: #1e1e1e;
+    color: #00ff00;
+    font-family: "Courier New", Courier, monospace;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+    margin: 0;
+}
+
+form {
+    background-color: #333;
+    border: 1px solid #00ff00;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #00ff00;
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+}
+
+input[type="text"],
+select {
+    background-color: #000;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 5px;
+    margin-bottom: 20px;
+    width: 100%;
+    font-size: 1em;
+}
+
+input[type="submit"] {
+    background-color: #00ff00;
+    color: #000;
+    border: 1px solid #00ff00;
+    padding: 10px;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover {
+    background-color: #000;
+    color: #00ff00;
+}
+
+img.display {
+    margin-top: 20px;
+    border: 1px solid #00ff00;
+    box-sizing: border-box;
+    max-width:100%;
+    max-height:100%;
+    display: block;
+}
+
+.explosion {
+    position: absolute;
+    z-index: 10;
+    scale: 200%;
+    top: 50%;
+    left: 50%;
+}
+
+.container {
+    position: relative;
+    max-height: 100%;
+    max-width: 70%;
+}
