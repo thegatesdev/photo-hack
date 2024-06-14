@@ -7,7 +7,6 @@ const form = document.querySelector("form");
 
 if (!categoryText.value) categoryText.value = categorySelect.value;
 categorySelect.onchange = function () {
-    console.log("onchange");
     categoryText.value = categorySelect.value;
     imageText.value = "";
     imageSelect.value = "";
@@ -20,9 +19,11 @@ imageSelect.onchange = function () {
     form.submit();
 }
 
-const src = explosion.src;
-explosion.src = "";
-explosion.src = src;
-setTimeout(function (){
-    explosion.remove();
-}, 1000);
+if (explosion !== null) {
+    const src = explosion.src;
+    explosion.src = "";
+    explosion.src = src;
+    setTimeout(function () {
+        explosion.remove();
+    }, 1000);
+}
