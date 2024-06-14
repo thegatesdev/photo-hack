@@ -1,5 +1,6 @@
 <?php
 
+$fullDir = dirname(__DIR__);
 $images = false;
 $animalsSelect = "";
 $peopleSelect = "";
@@ -26,17 +27,20 @@ if ($image) {
 }
 $folder = false;
 try{
-    $folder = new DirectoryIterator("public\\images\\" . $category ?? "");
+    $build = realpath("public\\images\\" . $category ?? "");
+    if (str_starts_with($build, $fullDir)){
+        $folder = new DirectoryIterator($build);
+    }
 } catch(UnexpectedValueException $e){
     // ignored
 }
 
 $imageBase64 = false;
-if (file_exists($file) && is_file($file)) {
+$fileBuild = realpath($file);
+if (file_exists($fileBuild) && is_file($fileBuild) && str_starts_with($fileBuild, $fullDir)) {
     $imageData = file_get_contents($file);
     $imageBase64 = base64_encode($imageData);
 }
-
 
 ?>
 <!DOCTYPE html>
