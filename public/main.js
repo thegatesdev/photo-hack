@@ -1,21 +1,19 @@
-const categorySelect = document.querySelector("#category-select");
-const categoryText = document.querySelector("#category-text");
-const imageSelect = document.querySelector("#image-select");
-const imageText = document.querySelector("#image-text");
-const explosion = document.querySelector(".explosion");
 const form = document.querySelector("form");
+const folder = document.querySelector("#folder");
+const image = document.querySelector("#image");
+const folderSelect = document.querySelector("#folder-select");
+const imageSelect = document.querySelector("#image-select");
+const explosion = document.querySelector(".explosion");
 
-if (!categoryText.value) categoryText.value = categorySelect.value;
-categorySelect.onchange = function () {
-    categoryText.value = categorySelect.value;
-    imageText.value = "";
+folderSelect.onchange = function () {
+    folder.value = folderSelect.value;
+    image.value = "";
     imageSelect.value = "";
     form.submit();
 }
 
-if (!imageText.value) imageText.value = imageSelect.value;
 imageSelect.onchange = function () {
-    imageText.value = imageSelect.value;
+    image.value = imageSelect.value;
     form.submit();
 }
 

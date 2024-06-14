@@ -1,87 +1,80 @@
 <?php
 
-$allowedDir = dirname(__DIR__);
+$rootDir = dirname(__DIR__);
+$publicDir = __DIR__;
 
-$images = false;
-$animalsSelect = "";
-$peopleSelect = "";
-if (isset($_POST['category-select'])) {
-    $value = $_POST['category-select'];
-    if ($value == "animals") {
-        $animalsSelect = "selected";
-    } else if ($value == "people"){
-        $peopleSelect = "selected";
-    }
-}
+$inputFolder = $_POST['folder'] ?? "";
+$inputImage = $_POST['image'] ?? "";
 
-$category = $_POST['category-text'] ?? "";
-$image = $_POST['image-text'] ?? "";
-
-$file = "images";
-if ($category) {
-    $file .= "/$category";
+$realFolder = realpath("$inputFolder");
+$realImage = realpath("$realFolder/$inputImage");
+if (empty($realFolder) || !str_starts_with($realFolder, $rootDir)) {
+   $realFolder = false;
 }
-if ($image) {
-    $file .= "/$image";
+if (empty($realImage) || !str_starts_with($realImage, $rootDir) || !is_file($realImage)) {
+   $realImage = false;
 }
-$folder = false;
-$build = false;
-try{
-    if ($category){
-        $build = realpath("images/$category");
-        if (str_starts_with($build, $allowedDir)){
-            $folder = new DirectoryIterator($build);
-        }
-    }
-} catch(UnexpectedValueException $e){
-    // ignored
-}
+$listerAll = new RecursiveDirectoryIterator("images");
+$listerAll->setFlags(RecursiveDirectoryIterator::SKIP_DOTS);
+$listerPath = $realFolder ? new DirectoryIterator($realFolder) : false;
 
 $imageBase64 = false;
-$fileBuild = realpath($file);
-if (file_exists($fileBuild) && is_file($fileBuild) && str_starts_with($fileBuild, $allowedDir)) {
-    $imageData = file_get_contents($file);
+if ($realImage) {
+    $imageData = file_get_contents($realImage);
     $imageBase64 = base64_encode($imageData);
 }
 
+function echoOptionDirectories(DirectoryIterator $it){
+    global $inputFolder;
+    foreach ($it as $key => $item) {
+        if (!$item->isDir()) continue;
+
+        echo "<option ";
+        if ($inputFolder == $key) echo "selected";
+        echo ">$key</option>";
+
+        $newIt = new RecursiveDirectoryIterator($key);
+        $newIt->setFlags(RecursiveDirectoryIterator::SKIP_DOTS);
+        echoOptionDirectories($newIt);
+    }
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photo viewer</title>
+    
     <link rel="stylesheet" href="main.css">
     <script src="main.js" defer></script>
+    
+    <title>De Plaat</title>
 </head>
 <body>
     <form action="." method="POST">
-        <label for="category-text">Category</label>
-        <input type="text" id="category-text" name="category-text" <?php echo "value='$category'" ?>>
-        <select id="category-select" name="category-select">
-            <option value="">All</option>
-            <option value="animals" <?php echo $animalsSelect ?>>Animals</option>
-            <option value="people" <?php echo $peopleSelect ?>>People</option>
+        <label for="folder">Folder</label>
+        <input type="text" id="folder" name="folder" <?php echo "value='$inputFolder'" ?>>
+        <select id="folder-select">
+            <option value="">Selecteer een folder</option>
+            <?php
+                echoOptionDirectories($listerAll);
+            ?>
         </select>
 
-        <label for="image-text">Image</label>
-        <input type="text" id="image-text" name="image-text" <?php echo "value='$image'" ?>>
-        <select id="image-select" name="image-select">
-            <option value="">Select an image</option>
+        <label for="image">Afbeelding</label>
+        <input type="text" id="image" name="image" <?php echo "value='$inputImage'" ?>>
+        <select id="image-select">
+            <option value="">Selecteer een afbeelding</option>
             <?php
-            if ($folder) {
-                foreach ($folder as $imageFile) {
-                    if ($imageFile->isDir()) continue;
-                    $name = $imageFile->getBasename();
-                    if ($name == ".htaccess") continue;
-                    echo "<option value='$name' ";
-                    if ($imageFile->getBasename() == $image) {
-                        echo "selected";
+                if ($listerPath) {
+                    foreach ($listerPath as $value) {
+                        if ($value->isDir()) continue;
+                        $name = $value->getFilename();
+                        // if (!str_ends_with($name, ".png")) continue;
+                        echo "<option value='$name'>$name</option>";
                     }
-                    echo ">$name</options>";
-                }   
-            }
+                }
             ?>
         </select>
 
@@ -97,5 +90,4 @@ if (file_exists($fileBuild) && is_file($fileBuild) && str_starts_with($fileBuild
         ?>
     </div>
 </body>
-
 </html>
