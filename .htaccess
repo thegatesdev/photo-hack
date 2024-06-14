@@ -1,4 +1,0 @@
-<Files "flag.png">  
-  Order Allow,Deny
-  Deny from all
-</Files>
