@@ -1,6 +1,7 @@
 <?php
 
-$fullDir = dirname(__DIR__);
+$allowedDir = dirname(__DIR__);
+
 $images = false;
 $animalsSelect = "";
 $peopleSelect = "";
@@ -14,22 +15,23 @@ if (isset($_POST['category-select'])) {
 }
 
 $category = $_POST['category-text'] ?? "";
-$category = str_replace("/", "\\", $category);
 $image = $_POST['image-text'] ?? "";
-$image = str_replace("/", "\\", $image);
 
-$file = "public\\images";
+$file = "images";
 if ($category) {
-    $file .= "\\$category";
+    $file .= "/$category";
 }
 if ($image) {
-    $file .= "\\$image";
+    $file .= "/$image";
 }
 $folder = false;
+$build = false;
 try{
-    $build = realpath("public\\images\\" . $category ?? "");
-    if (str_starts_with($build, $fullDir)){
-        $folder = new DirectoryIterator($build);
+    if ($category){
+        $build = realpath("images/$category");
+        if (str_starts_with($build, $allowedDir)){
+            $folder = new DirectoryIterator($build);
+        }
     }
 } catch(UnexpectedValueException $e){
     // ignored
@@ -37,7 +39,7 @@ try{
 
 $imageBase64 = false;
 $fileBuild = realpath($file);
-if (file_exists($fileBuild) && is_file($fileBuild) && str_starts_with($fileBuild, $fullDir)) {
+if (file_exists($fileBuild) && is_file($fileBuild) && str_starts_with($fileBuild, $allowedDir)) {
     $imageData = file_get_contents($file);
     $imageBase64 = base64_encode($imageData);
 }
@@ -53,6 +55,7 @@ if (file_exists($fileBuild) && is_file($fileBuild) && str_starts_with($fileBuild
     <link rel="stylesheet" href="main.css">
     <script src="main.js" defer></script>
 </head>
+<body>
     <form action="." method="POST">
         <label for="category-text">Category</label>
         <input type="text" id="category-text" name="category-text" <?php echo "value='$category'" ?>>
@@ -89,7 +92,7 @@ if (file_exists($fileBuild) && is_file($fileBuild) && str_starts_with($fileBuild
         <?php
             if ($imageBase64) {
                 echo "<img class='display' src='data:image/png;base64,$imageBase64'>";
-                echo "<img src='public/images/explosion.gif' class='explosion'>";
+                echo "<img src='images/explosion.gif' class='explosion'>";
             }
         ?>
     </div>
