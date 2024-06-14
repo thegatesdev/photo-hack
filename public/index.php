@@ -9,10 +9,10 @@ $inputImage = $_POST['image'] ?? "";
 $realFolder = realpath("$inputFolder");
 $realImage = realpath("$realFolder/$inputImage");
 if (empty($realFolder) || !str_starts_with($realFolder, $rootDir)) {
-   $realFolder = false;
+    $realFolder = false;
 }
 if (empty($realImage) || !str_starts_with($realImage, $rootDir) || !is_file($realImage)) {
-   $realImage = false;
+    $realImage = false;
 }
 $listerAll = new RecursiveDirectoryIterator("images");
 $listerAll->setFlags(RecursiveDirectoryIterator::SKIP_DOTS);
@@ -24,13 +24,16 @@ if ($realImage) {
     $imageBase64 = base64_encode($imageData);
 }
 
-function echoOptionDirectories(DirectoryIterator $it){
+function echoOptionDirectories(DirectoryIterator $it)
+{
     global $inputFolder;
     foreach ($it as $key => $item) {
-        if (!$item->isDir()) continue;
+        if (!$item->isDir())
+            continue;
 
         echo "<option ";
-        if ($inputFolder == $key) echo "selected";
+        if ($inputFolder == $key)
+            echo "selected";
         echo ">$key</option>";
 
         $newIt = new RecursiveDirectoryIterator($key);
@@ -42,23 +45,26 @@ function echoOptionDirectories(DirectoryIterator $it){
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <link rel="stylesheet" href="main.css">
     <script src="main.js" defer></script>
-    
+
     <title>De Plaat</title>
 </head>
+
 <body>
     <form action="." method="POST">
+        <h1>De Plaat</h1>
         <label for="folder">Folder</label>
         <input type="text" id="folder" name="folder" <?php echo "value='$inputFolder'" ?>>
         <select id="folder-select">
             <option value="">Selecteer een folder</option>
             <?php
-                echoOptionDirectories($listerAll);
+            echoOptionDirectories($listerAll);
             ?>
         </select>
 
@@ -67,14 +73,15 @@ function echoOptionDirectories(DirectoryIterator $it){
         <select id="image-select">
             <option value="">Selecteer een afbeelding</option>
             <?php
-                if ($listerPath) {
-                    foreach ($listerPath as $value) {
-                        if ($value->isDir()) continue;
-                        $name = $value->getFilename();
-                        // if (!str_ends_with($name, ".png")) continue;
-                        echo "<option value='$name'>$name</option>";
-                    }
+            if ($listerPath) {
+                foreach ($listerPath as $value) {
+                    if ($value->isDir())
+                        continue;
+                    $name = $value->getFilename();
+                    // if (!str_ends_with($name, ".png")) continue;
+                    echo "<option value='$name'>$name</option>";
                 }
+            }
             ?>
         </select>
 
@@ -83,11 +90,12 @@ function echoOptionDirectories(DirectoryIterator $it){
 
     <div class="container">
         <?php
-            if ($imageBase64) {
-                echo "<img class='display' src='data:image/png;base64,$imageBase64'>";
-                echo "<img src='images/explosion.gif' class='explosion'>";
-            }
+        if ($imageBase64) {
+            echo "<img class='display' src='data:image/png;base64,$imageBase64'>";
+            echo "<img src='images/explosion.gif' class='explosion'>";
+        }
         ?>
     </div>
 </body>
+
 </html>
